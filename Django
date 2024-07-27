@@ -1,0 +1,74 @@
+
+from django.contrib import admin
+from django.urls import path, include
+from pages.views import page1, page2, page3
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('page1/', page1, name='page1'),
+    path('page2/', page2, name='page2'),
+    path('page3/', page3, name='page3'),
+    path('', include('django.contrib.flatpages.urls')),
+]
+
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.contrib.flatpages.models import FlatPage
+
+def page1(request):
+    return render(request, 'pages/page1.html', {'flatpage': FlatPage.objects.get(url='/page1/')})
+
+def page2(request):
+    return render(request, 'pages/page2.html', {'flatpage': FlatPage.objects.get(url='/page2/')})
+
+@login_required
+def page3(request):
+    return render(request, 'pages/page3.html', {'flatpage': FlatPage.objects.get(url='/page3/')})
+
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Project</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+</head>
+<body>
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+
+{% extends 'base.html' %}
+{% block content %}
+  {{ flatpage.content }}
+{% endblock %}
+
+# my_project/templates/pages/page2.html
+{% extends 'base.html' %}
+{% block content %}
+  {{ flatpage.content }}
+  {{ flatpage.content }}
+{% endblock %}
+
+
+{% extends 'base.html' %}
+{% block content %}
+  <div class="custom-font">
+    {{ flatpage.content }}
+  </div>
+{% endblock %}
+
+
+.custom-font {
+  font-family: 'Arial', sans-serif;
+  font-size: 18px;
+}
